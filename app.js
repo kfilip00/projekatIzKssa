@@ -4,7 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mysql = require('mysql');
-
+var parser = require('body-parser');
 
 //------------Deklaracija ruta
 var indexRouter = require('./routes/index');
@@ -20,7 +20,7 @@ app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urle○ncoded({ extended: false }));
+app.use(parser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
