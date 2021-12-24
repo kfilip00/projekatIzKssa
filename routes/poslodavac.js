@@ -1,0 +1,159 @@
+var express = require('express');
+var parser = require('body-parser');
+const mysql = require('mysql');
+var router = express.Router();
+
+const con = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    database: 'evidencija_satnica'
+});
+con.connect(function(err) {
+    if (err) throw err;
+});
+
+
+
+router.post('/', function(req, res, next) {
+    let ime_firme = req.body.ime_firme;
+    let sql = 'SELECT * FROM radnik_informacije,korisnici where korisnici.ime_firme=radnik_informacije.ime_firme AND korisnici.rola="radnik" AND radnik_informacije.ime_firme=? GROUP BY korisnici.email';
+    con.query(sql, [ime_firme], function(err, result) {
+        if (err) {
+            console.log(err);
+            res.status(500);
+            return res.end(err.message);
+        }
+        res.status(200);
+        let rezultat = JSON.stringify(result);
+        return res.end(rezultat);
+    })
+});
+
+router.post('/dodajRadnika', function(req, res, next) {
+
+    var ime = req.body.ime;
+    var prezime = req.body.prezime;
+    var email = req.body.email;
+    var lozinka = req.body.lozinka;
+    var broj_telefona = req.body.broj_telefona;
+    var ime_firme = req.body.ime_firme;
+    var satnica = req.body.satnica;
+    var rola = "radnik";
+
+    var sql = 'INSERT INTO `korisnici`(`ime`, `prezime`, `email`, `lozinka`, `rola`, `ime_firme`) VALUES (?,?,?,?,?,?)';
+    con.query(sql, [ime, prezime, email, lozinka, rola, ime_firme], function(err, result) {
+        if (err) {
+            console.log(err);
+            res.status(500);
+            return res.end(err.message);
+        } else {
+            var sqlGet = 'SELECT id FROM korisnici where email=?'
+            con.query(sqlGet, [email], function(err, result2) {
+                if (err) {
+                    console.log(err);
+                    res.status(500);
+                    return res.end(err.message);
+                } else {
+
+                    var rezultat=JSON.stringify(result2);
+                    rezultat=rezultat.substr(1, rezultat.length-2);
+                    rezultat = JSON.parse(rezultat);
+                    var id = rezultat["id"];
+                    var sql2 = 'INSERT INTO `radnik_informacije`(`broj_telefona`, `ime_firme`, `satnica`,`id_korisnika`) VALUES (?,?,?,?)'
+                    con.query(sql2, [broj_telefona, ime_firme, satnica, id], function(err, result) {
+                        if (err) {
+                            console.log(err);
+                            res.status(500);
+                            return res.end(err.message);
+                        } else {
+                            res.status(200);
+                            res.end("Uspesno");
+                        }
+                    })
+                }
+            })
+        }
+
+
+    })
+});
+
+router.post('/izmeniRadnika', function(req, res, next)
+{
+    //var ime=req.body.ime;
+    //var prezime=req.body.prezime;
+    //var email=req.body.email;
+    //var lozinka=req.body.lozinka;
+    //var broj_telefona=req.body.broj_telefona;
+    //var ime_firme=req.body.ime_firme;
+    var satnica=req.body.satnica;
+    var id=req.body.id;
+
+    //sql='UPDATE radnik_informacije ri,korisnici k SET ri.broj_telefona=? ,ri.satnica=?,k.ime=? ,k.prezime=?,k.email=?,k.lozinka=? WHERE ri.id_korisnika=? AND k.id=?'
+    //[broj_telefona,satnica,ime,prezime,email,lozinka,id,id]
+    sql='UPDATE radnik_informacije ri SET ri.satnica=? WHERE ri.id_korisnika=?'
+    con.query(sql,[satnica,id], function(err, result) {
+            if (err) {
+                console.log(err);
+                res.status(500);
+                return res.end(err.message);
+            }
+            res.end("Uspesno");
+        })
+
+    
+
+});
+
+router.post('/izmeniSopstvenePodatke', function(req, res, next) {
+
+    var ime = req.body.ime;
+    var prezime = req.body.prezime;
+    var email = req.body.email;
+    var lozinka = req.body.lozinka;
+    var staro_ime = req.body.staro_ime;
+    var ime_firme = req.body.ime_firme;
+    var sql2 = 'UPDATE `poslodavac_informacije` SET `ime_firme`=? WHERE ime_firme=?'
+    con.query(sql2, [ime_firme, staro_ime], function(err, result) {
+        if (err) {
+            console.log(err);
+            res.status(500);
+            return res.end(err.message);
+        }
+
+        var sql = 'UPDATE `korisnici` SET `ime`=? ,`prezime`=? ,`email`=? ,`lozinka`=? WHERE ime_firme=? AND rola="poslodavac"';
+        con.query(sql, [ime, prezime, email, lozinka, ime_firme], function(err, result) {
+            if (err) {
+                console.log(err);
+                res.status(500);
+                return res.end(err.message);
+            } else {
+                res.status(200);
+                res.end("Uspesno");
+            }
+
+
+        })
+
+
+    })
+});
+
+router.post('/obrisiRadnika', function(req, res, next) {
+
+
+    var email = req.body.email;
+    let sql = 'DELETE FROM `korisnici` WHERE email=?';
+
+    con.query(sql, [email], function(err, result) {
+        if (err) {
+            console.log(err);
+            res.status(500);
+            return res.end(err.message);
+        }
+        res.end("Uspesno");
+    })
+});
+
+
+module.exports = router;

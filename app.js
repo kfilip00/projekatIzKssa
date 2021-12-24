@@ -9,6 +9,8 @@ var parser = require('body-parser');
 //------------Deklaracija ruta
 var indexRouter = require('./routes/index');
 var adminRouter = require('./routes/admin');
+var poslodavacRouter = require('./routes/poslodavac');
+var radnikRouter = require('./routes/radnik');
 
 var app = express();
 
@@ -28,6 +30,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 //------------Koriscenje ruta
 app.use('/', indexRouter);
 app.use('/admin', adminRouter);
+app.use('/poslodavac', poslodavacRouter);
+app.use('/radnik', radnikRouter);
 
 
 // catch 404 and forward to error handler

@@ -9,7 +9,6 @@ const con = mysql.createConnection({
 });
 con.connect( function(err) {
     if (err) throw err;
-    console.log('Konekcija sa bazom uspostavljena');
 });
 
 
@@ -24,6 +23,7 @@ router.post('/prijava', function(req, res, next) {
     let sql = 'SELECT * FROM korisnici where email=? and lozinka=?'
     con.query(sql,[email,lozinka], function(err,result){
         if(err){
+            console.log(err);
             res.status(500);
             return res.end(err.message);
         }

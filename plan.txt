@@ -1,0 +1,35 @@
+** odradio
+// za buducnost
+   nisam odradio,ali treba za osnovni projekat
+
+*registracija:
+		*admin:
+			*dodaje poslodavce
+			*brise korisnike
+			*ukida pravo koriscenje aplikacije
+			//vidi sve poslodavce
+				//vidi sve radnike
+		*poslodavac:
+			*menja svoje podatke
+			*vidi radnike
+			*dodaje radnike
+			*ukljanja radnike
+			*menja podatke o radnicima
+			upise satnicu radnicima(u dogovoru sa radnikom)
+			isplati radnike
+		radnik:
+			*vidi svoje podatke
+			*menja svoje podatke
+			vidi svoje satnice
+			potvrdjuje upis satnice
+
+//verifikacija za menjanje satnice
+//verifikacija emajla
+//da se vidi kalendar kojim danima je radnik radio/upisana mu je satnica
+//da proveri da li radnik vec ima uplacenu satnicu za taj dan
+//pretplata za koriscenje
+ako je moze_da_koristi==0 da se pokaze odgovarajuca poruka
+da ne moze da ima 2 korisnika sa istim emailom
+Poruka kada pokusava da napravi firmu sa imenom koje vec postoji
+
+			
