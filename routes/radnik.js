@@ -6,10 +6,12 @@ const mysql = require('mysql');
 //------------Povezivanje sa bazom
 const con = mysql.createConnection({
     host: 'localhost', user: 'root',database: 'evidencija_satnica'
+
 });
 
 con.connect( function(err) {
     if (err) throw err;
+
 });
 
 
@@ -40,9 +42,16 @@ router.post('/izmeniInformacije', function(req, res, next) {
     sql="UPDATE korisnici k, radnik_informacije ri SET k.ime=? ,k.prezime=?, k.email=?,k.lozinka=?, ri.broj_telefona=? WHERE k.id=ri.id_korisnika AND k.id=?";
     con.query(sql, [ime,prezime,email,lozinka,broj_telefona,id], function(err, result) {
             if (err) {
-                console.log(err);
-                res.status(500);
-                return res.end(err.message);
+                        console.log(err.errno);
+                        res.status(200);
+                        if(err.errno==1062)
+                        {
+                                    return res.end("Korisnik sa ovim emajlom vec postoji");
+                        }
+                        else
+                        {
+                        return res.end(err.message);
+                        }
             }
             res.status(200);
             return res.end("Uspesno");
